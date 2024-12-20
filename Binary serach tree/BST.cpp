@@ -25,12 +25,54 @@ public:
 	{
 		return root;
 	}
-	void insertNode(int value)
+	void insertNode(TreeNode* node, int value)
 	{
-		TreeNode* newNode = new TreeNode(value);
+		if (node == nullptr)
+		{
+			root = new TreeNode(value);
+			return;
+		}
+		TreeNode* temp = node;
+		TreeNode* temp1 = nullptr;
+		bool flag = false;
+		while (temp && flag == false)
+		{
+			if (temp->data == value)
+			{
+				flag = true;
+			}
+			else if (temp->data > value)
+			{
+				temp1 = temp;
+				temp = temp->left;
+			}
+			else if (temp->data < value)
+			{
+				temp1 = temp;
+				temp = temp->right;
+			}
+		}
+		if (flag)
+		{
+			cout << "Value already exits.\n";
+			return;
+		}
+		else
+		{
+			if (value < temp1->data)
+			{
+				temp1->left = new TreeNode(value);
+			}
+			else
+			{
+				temp1->right = new TreeNode(value);
+			}
+		}
+	}
+	void levelOrder(TreeNode* root)
+	{
 		if (root == nullptr)
 		{
-			root = newNode;
 			return;
 		}
 		queue<TreeNode*> q;
@@ -39,23 +81,12 @@ public:
 		{
 			TreeNode* current = q.front();
 			q.pop();
-
-			if (current->left == nullptr)
-			{
-				current->left = newNode;
-				return;
-			}
-			else
+			cout << current->data << " ";
+			if (current->left != nullptr)
 			{
 				q.push(current->left);
 			}
-
-			if (current->right == nullptr)
-			{
-				current->right = newNode;
-				return;
-			}
-			else
+			if (current->right != nullptr)
 			{
 				q.push(current->right);
 			}
@@ -91,30 +122,15 @@ public:
 		postOrder(node->right);
 		cout << node->data << ' ';
 	}
-	/*void deleteNode(int value)
-	{
-		TreeNode* temp = root;
-		TreeNode* temp1 = nullptr;
-		bool flag = false;
-		while (temp && flag == false)
-		{
-			if (temp->data == value)
-			{
-				flag = true;
-			}
-			else if(temp)
-		}
-	}*/
 	int findHeight(TreeNode* node)
 	{
-		static int height = 0;
 		if (node == nullptr)
 		{
 			return -1;
 		}
-		height++;
-		findHeight(node->left);
-		return height;
+		int leftHeight = findHeight(node->left);
+		int rightHeight = findHeight(node->right);
+		return leftHeight > rightHeight ? leftHeight + 1 : rightHeight + 1;
 	}
 	int countNodes(TreeNode* node)
 	{
@@ -132,7 +148,6 @@ public:
 	{
 		int leftHeight = findHeight(node->left);
 		int rightHeight = findHeight(node->right);
-		cout << leftHeight << " " << rightHeight << " ";
 		if (leftHeight == rightHeight || leftHeight + 1 == rightHeight || leftHeight == rightHeight + 1)
 		{
 			return true;
@@ -141,90 +156,33 @@ public:
 	}
 	bool search(TreeNode* node, int value)
 	{
-		if (node == nullptr)
-		{
-			return false;
-		}
-		if (node->data == value)
-		{
-			return true;
-		}
-		return search(node->left, value) || search(node->right, value);
-	}
-	void swap(TreeNode*& a, TreeNode*& b)
-	{
-		TreeNode* temp = a;
-		a = b;
-		b = temp;
-	}
-	TreeNode* mirrorTree(TreeNode* root)
-	{
-		if (root == nullptr)
-		{
-			return nullptr;
-		}
-		TreeNode* temp = root;
-		mirrorTree(temp->right);
-		mirrorTree(temp->left);
-		swap(temp->left, temp->right);
-		return temp;
-	}
-	int transformToSumTree(TreeNode* root)
-	{
-		if (root == nullptr)
-		{
-			return 0;
-		}
-		root->data = root->data + transformToSumTree(root->left) + transformToSumTree(root->right);
-		return root->data;
-	}
-	void deleteNode(TreeNode* root, int key)
-	{
-		TreeNode* temp = root;
-		TreeNode* temp2 = root;
+		TreeNode* temp = node;
 		bool flag = false;
-		while (temp != nullptr && !flag)
+		while (temp && flag == false)
 		{
-			if (temp->data > key)
+			if (temp->data == value)
 			{
-				temp2 = temp;
+				flag = true;
+			}
+			else if (temp->data > value)
+			{
 				temp = temp->left;
 			}
-			else if (temp->data < key)
+			else if (temp->data < value)
 			{
-				temp2 = temp;
 				temp = temp->right;
 			}
-			else
-				flag = true;
 		}
-		if (flag)
-		{
-
-		}
-		else
-			cout << "\nNode is not present";
+		return flag;
 	}
 };
 int main()
 {
-	BinarySearchTree bt;
-	int nodes, n;
-	cout << "Enter number of nodes: ";
-	cin >> nodes;
-	for (int i = 1; i <= nodes; i++)
+	BinarySearchTree bst;
+	for (int i = 1; i <= 7; i++)
 	{
-		cin >> n;
-		bt.insertNode(n);
+		bst.insertNode(bst.getRoot(), i);
 	}
-	cout << bt.transformToSumTree(bt.getRoot());
-	cout << " ";
-	bt.inOrder(bt.getRoot());
-	/*cout << "Original Tree\n";
-	bt.inOrder(bt.getRoot());
-	cout << " ";
-	cout << "\nMirrored Tree\n";
-	TreeNode* temp1 = bt.mirrorTree(bt.getRoot());
-	bt.inOrder(temp1);*/
+	bst.levelOrder(bst.getRoot());
 	return 0;
 }
