@@ -175,14 +175,82 @@ public:
 		}
 		return flag;
 	}
+	TreeNode* findSuccessor(TreeNode* node) 
+	{
+		while (node->left)
+		{
+			node = node->left;
+		}
+		return node;
+	}
+	TreeNode* findPredecessor(TreeNode* node)
+	{
+		while (node->right)
+		{
+			node = node->right;
+		}
+		return node;
+	}
+	TreeNode* deleteNode(TreeNode* node, int key)
+	{
+		if (node == nullptr) 
+		{
+			return node; 
+		}
+		if (key < node->data)
+		{
+			node->left = deleteNode(node->left, key);
+		}
+		else if (key > node->data)
+		{
+			node->right = deleteNode(node->right, key);
+		}
+		else 
+		{
+			if (node->left == nullptr && node->right == nullptr)
+			{
+				delete node;
+				return nullptr;
+			}
+			else if (node->left == nullptr)
+			{
+				TreeNode* temp = node->right;
+				delete node;
+				return temp;
+			}
+			else if (node->right == nullptr)
+			{
+				TreeNode* temp = node->left;
+				delete node;
+				return temp;
+			}
+			else
+			{
+				TreeNode* temp = findSuccessor(node->right);
+				node->data = temp->data;
+				node->right = deleteNode(node->right, temp->data);
+			}
+		}
+		return node;
+	}
 };
 int main()
 {
 	BinarySearchTree bst;
-	for (int i = 1; i <= 7; i++)
+	/*for (int i = 1; i <= 7; i++)
 	{
 		bst.insertNode(bst.getRoot(), i);
-	}
+	}*/
+	bst.insertNode(bst.getRoot(), 20);
+	bst.insertNode(bst.getRoot(), 8);
+	bst.insertNode(bst.getRoot(), 13);
+	bst.insertNode(bst.getRoot(), 25);
+	bst.insertNode(bst.getRoot(), 50);
+	bst.insertNode(bst.getRoot(), 2);
+	bst.insertNode(bst.getRoot(), 37);
 	bst.levelOrder(bst.getRoot());
+	cout << "\n";
+	TreeNode* temp = bst.deleteNode(bst.getRoot(), 8);
+	bst.levelOrder(temp);
 	return 0;
 }
